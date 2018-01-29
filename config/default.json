@@ -1,0 +1,14 @@
+{
+  "rabbitmq" : {
+    "host": "localhost",
+    "port": 5672,
+    "username": "guest",
+    "password": "guest",
+    "vhost": "/",
+    "public_queue": {
+      "name": "public_queue",
+      "prefetch": 10    // This decides the parallelism of worker instances 
+    },
+    "back_queue": "back_queue"
+  }
+}
