@@ -1,0 +1,2 @@
+# rabbitMQ_rpc_node_sample
+一个基于Promise对rabbitMQ RPC机制封装调用的开发示例
