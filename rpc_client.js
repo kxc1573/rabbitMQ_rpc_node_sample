@@ -59,11 +59,11 @@ class RPCClient extends RabbitMQ {
             this.outstandingRequests[correlationId] = resolve;
 
             /**
-                The difference that return result between responseCallback and callback:
-                1) responseCallback return to the original request
-                2) callback return to the callback url which provided by requester
+                The difference between responseCallback and callback:
+                1) responseCallback return to the original request, it's will response after task done, it mean blocking risk.
+                2) callback return to the callback url which provided by requester, need some other more code to do.
                 Here can coexist just because the Promise allow resolve only only time.
-            **?
+            **/
 
             /**
             // 2.Response immediately for asynchronous task
