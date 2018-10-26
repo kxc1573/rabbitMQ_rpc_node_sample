@@ -43,6 +43,7 @@ class RabbitMQ {
 
     createQueue(queue) {
         return new Promise((resolve, reject) => {
+            // something need attention here.
             this.channel.assertQueue(queue, { autoDelete: true }).then((ret) => {
                 console.info(` Queue ${ret.queue} created.`);
                 resolve(ret);

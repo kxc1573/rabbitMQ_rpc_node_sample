@@ -55,8 +55,34 @@ class RPCClient extends RabbitMQ {
                 }
             );
             console.warn(` RPC call with correlationId ${correlationId} sent out `);
+            // Store the resolver,  and let the responseCallback resolve it.
             this.outstandingRequests[correlationId] = resolve;
-            // Store the resolver,  and let the callback responseCallback resolve it.
+
+            /**
+                The difference that return result between responseCallback and callback:
+                1) responseCallback return to the original request
+                2) callback return to the callback url which provided by requester
+                Here can coexist just because the Promise allow resolve only only time.
+            **?
+
+            /**
+            // 2.Response immediately for asynchronous task
+            // if client want get result, can apply callback or query after. 
+            try {
+                let data = JSON.parse(msg);
+                let asyncTypeList = [];    // the asynchronous task  types
+                if (asyncTypeList.includes(data.type)) {
+                    let response = {
+                        tid: data.tid,
+                        type: data.type,
+                        status: 'new'
+                    };
+                    resolve(JSON.stringify(response));
+                }
+            } catch(e) {
+                console.error(`Response in rpc_client's sentToQueue error: ${e.stack}`)
+            }
+            **/
         });
     }
 
@@ -66,10 +92,9 @@ class RPCClient extends RabbitMQ {
             resolve(msg.content.toString());
             delete this.outstandingRequests[msg.properties.correlationId];
         } else {
-            // This only happens when frontend sends a RPC all to crawler, and then
-            // the frontend restarts; when the crawler finishes the  RPC, it sends
-            // the response back to frontend (the one that just restarted), which
-            // doesn't have any knowlege about the resolve and correlationId.
+            // This only happens when frontend sends a task, and then the frontend restarts; 
+            // when task finished, it's response be sended back to frontend (the one that just restarted), 
+            // which doesn't have any knowlege about the resolve and correlationId.
             // in this case, we can do nothing but give it up.
             console.error(` An response with correlationID: ${msg.properties.correlationId} without corresponding request is received, this might be caused by the restart of the frontend`);
             console.error(` all the coorelationId now available are: ${JSON.stringify(this.outstandingRequests)}`);
